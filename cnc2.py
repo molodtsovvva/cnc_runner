@@ -14,8 +14,8 @@ import subprocess
 
 
 # Starting position for acqusition
-x_start = 30
-y_start = 30
+x_start = 170
+y_start = 25
 z= 0
 
 
@@ -23,9 +23,9 @@ z= 0
 #specify the step in mm:
 step_size = 5
 #specify the number of steps:
-step_number = 2
+step_number = 1
 #specify the waiting time between steps in sec:
-wait_time = 30
+wait_time = 60
 # name of the other python program to call for acquisition
 
 
@@ -41,6 +41,21 @@ run_code = [
     "$#"
    
 ]
+
+
+# Code to Home the Machine (and rezero)
+send_home = [
+
+    "$H                   ; Home machine (if supported)",
+    "$#                   ; Print offsets"
+    "G90                  ; Use absolute positioning",
+    "G21                    ; Millimeters",
+    "G17 ; Select XY plane",
+    "G10 L20 P1 X0 Y0       ; Set current position as 0,0 for work coordinate system G54",
+    "$#                     ; Print offsets, verify G54",
+    f'G00 X{x_start} Y{y_start} F1000 ; Move to (X={x_start}, Y={y_start})',
+    ]
+
 
 # Output CSV filename
 output_file = "positions2.csv"
@@ -72,20 +87,6 @@ with open(output_file, mode='w', newline='') as file:
     writer.writerows(positions)
 
 
-
-
-# Code to Home the Machine (and rezero)
-send_home = [
-
-    "$H                   ; Home machine (if supported)",
-    "$#                   ; Print offsets"
-    "G90                  ; Use absolute positioning",
-    "G21                    ; Millimeters",
-    "G17 ; Select XY plane",
-    "G10 L20 P1 X0 Y0       ; Set current position as 0,0 for work coordinate system G54",
-    "$#                     ; Print offsets, verify G54",
-    f'G00 X{x} Y{y} F1000 ; Move to (X={x}, Y={y})',
-    ]
 
 
 
