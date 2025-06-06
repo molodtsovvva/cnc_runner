@@ -14,3 +14,13 @@ To run the program, save the python file in the directory to which you cd'ed, an
 The step size, number of steps, and the waiting time in between acquisitions can be changed INSIDE the program.
 
 Recommended to first home the CNC, then run. The list of the positions the CNC iterated through can be found in positions.csv. 
+
+
+If using the mac version, cnc2.py, do not specify the port in the call command. Example:
+> python cnc2.py --mode run
+Instead, specify the port inside the program itself. To see the list of available ports, run:
+> ls /dev/tty.*
+
+
+
+
