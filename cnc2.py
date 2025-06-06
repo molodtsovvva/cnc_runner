@@ -23,13 +23,11 @@ z= 0
 #specify the step in mm:
 step_size = 5
 #specify the number of steps:
-step_number = 8
+step_number = 2
 #specify the waiting time between steps in sec:
-wait_time = 10
+wait_time = 30
 # name of the other python program to call for acquisition
-prog_name = "test2.py"
-prog_name = f'echo'
-prog_args = ['echo', './nHCAL_DAQ']
+
 
 
 
@@ -49,6 +47,8 @@ output_file = "positions2.csv"
 
 # Collect positions
 positions = []
+position_number =0
+
 
 
 for j in range(step_number):
@@ -58,9 +58,10 @@ for j in range(step_number):
         #x = x_start + i * step_size
         x = i * step_size
         positions.append((x, y))
+        position_number = position_number+1
         run_code.append(f'G00 X{x} Y{y} F1000 ; Move to (X={x}, Y={y})')
-        run_code.append(f'DAQ X{x} Y{y} ; Trigger acquisition')
-        run_code.append(f'G4 P{wait_time} ; Wait {wait_time}s')
+        run_code.append(f'DAQ X{x} Y{y} P{position_number} ; Trigger acquisition')
+        #run_code.append(f'G4 P{wait_time} ; Wait {wait_time}s')
         
    
 
@@ -183,17 +184,26 @@ if __name__ == '__main__':
 #                    GET X AND Y from string, pass to program args
 #                    exec(open(prog_name).read())
 
-                    match = re.search(r'X(\d+)\s+Y(\d+)', code)
+                    match = re.search(r'X(\d+)\s+Y(\d+)\s+P(\d+)', code)
                     if match:
                         x = int(match.group(1))
                         y = int(match.group(2))
-                        print(f"X: {x}, Y: {y}")
+                        p = int(match.group(3))
+                        print(f"X: {x}, Y: {y}, P: {p}")
                     else:
                         print("No match found.")
 
-
-                    prog_args = ["echo", "./runMyDaq", f'{wait_time}', f'{x}', f'{y}']
+                    
+                    
+                    #prog_args = ["./runMyDaq", f'{wait_time}', f'{x}', f'{y}']
+                    
+                                        # we're passing the position number
+                    prog_args = ["./runMyDaq", f'{wait_time}', f'{p}']
                     result = subprocess.run(prog_args, capture_output=True, text=True)
+
+
+                    # This will execute after the subprocess finishes
+                    print("Subprocess finished, continuing the program...")
 
                     # Access the output and return code
                     print(result.stdout)  # Print standard output
